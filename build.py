@@ -289,7 +289,7 @@ def main():
     sm.append("</urlset>")
     open(os.path.join(OUT, "sitemap.xml"), "w").write("\n".join(sm) + "\n")
 
-    for f in ("robots.txt", "llms.txt", "_headers"):
+    for f in ("robots.txt", "llms.txt", "_headers", "CNAME"):
         shutil.copy(os.path.join(ROOT, "static", f), OUT)
     open(os.path.join(OUT, ".nojekyll"), "w").close()
     print("fertig:", OUT)
