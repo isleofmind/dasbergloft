@@ -6,8 +6,8 @@ Statische Website für https://dasbergloft.de – kein Framework, keine Datenban
 
 | Ordner/Datei | Inhalt |
 |---|---|
-| `site/` | **Die fertige Website.** Genau dieser Ordner wird gehostet. |
-| `build.py` | Erzeugt `site/` neu aus `raw/`, `img_src/`, `fonts_src/`, `static/` (`python3 build.py`). |
+| `docs/` | **Die fertige Website.** GitHub Pages veröffentlicht genau diesen Ordner. |
+| `build.py` | Erzeugt `docs/` neu aus `raw/`, `img_src/`, `fonts_src/`, `static/` (`python3 build.py`). |
 | `raw/` | Sicherung der Original-Seiten von Lovable (Stand 21.11.2026). |
 | `img_src/`, `fonts_src/` | Alle 97 Bilder und die 4 Schriftdateien. |
 | `static/` | Galerie/Formular-Skript, Zusatz-CSS, robots.txt, llms.txt, Cache-Header. |
@@ -15,7 +15,7 @@ Statische Website für https://dasbergloft.de – kein Framework, keine Datenban
 ## Kostenlos hosten mit Cloudflare Pages (empfohlen)
 
 1. Kostenloses Konto auf https://dash.cloudflare.com anlegen.
-2. **Workers & Pages → Create → Pages → Upload assets** (Direkt-Upload) → Projektname `dasbergloft` → den Ordner `site/` hochladen → Deploy.
+2. **Workers & Pages → Create → Pages → Upload assets** (Direkt-Upload) → Projektname `dasbergloft` → den Ordner `docs/` hochladen → Deploy.
    *(Alternativ: dieses Projekt in ein GitHub-Repository legen und Pages damit verbinden – dann geht jede Änderung automatisch live.)*
 3. Testen unter `https://dasbergloft.pages.dev`.
 4. **Custom domains → Set up a domain →** `dasbergloft.de` und `www.dasbergloft.de` hinzufügen und den DNS-Anweisungen folgen

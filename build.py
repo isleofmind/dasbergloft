@@ -13,7 +13,7 @@ import datetime
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 RAW = os.path.join(ROOT, "raw")
-OUT = os.path.join(ROOT, "site")
+OUT = os.path.join(ROOT, "docs")  # GitHub Pages veröffentlicht den Ordner docs/
 DOMAIN = "https://dasbergloft.de"
 TODAY = datetime.date.today().isoformat()
 
@@ -233,6 +233,16 @@ def build_body(src, path):
     return body
 
 
+def relativize(page, depth):
+    """Pfade relativ machen, damit die Seite auch unter einer Test-Adresse mit Unterordner funktioniert."""
+    pre = "../" * depth
+    page = re.sub(r'(href|src)="/(?!/)', lambda m: f'{m.group(1)}="{pre}', page)
+    page = re.sub(r'((?:srcset)="[^"]*")', lambda m: m.group(1).replace(" /img/", f" {pre}img/").replace('"/img/', f'"{pre}img/'), page)
+    page = page.replace('href=""', 'href="./"').replace('href="#', 'href="#')
+    page = page.replace(f'href="{pre}#', f'href="{pre or "./"}#') if pre else page.replace('href="#buchen"', 'href="#buchen"')
+    return page
+
+
 def main():
     if os.path.isdir(OUT):
         shutil.rmtree(OUT)
@@ -241,7 +251,7 @@ def main():
     shutil.copytree(os.path.join(ROOT, "fonts_src"), os.path.join(OUT, "fonts"))
     shutil.copy(os.path.join(RAW, "favicon.ico"), OUT)
     css = open(os.path.join(RAW, "styles.css"), encoding="utf-8").read()
-    open(os.path.join(OUT, "assets", "styles.css"), "w", encoding="utf-8").write(ASSET_RE.sub(asset_path, css))
+    open(os.path.join(OUT, "assets", "styles.css"), "w", encoding="utf-8").write(ASSET_RE.sub(asset_path, css).replace("url(/fonts/", "url(../fonts/"))
     for f in ("site.js", "site.css"):
         shutil.copy(os.path.join(ROOT, "static", f), os.path.join(OUT, "assets", f))
 
@@ -256,6 +266,7 @@ def main():
                 "\n</head>\n<body>" + build_body(src, path) + "\n</body>\n</html>\n")
         dest = os.path.join(OUT, out_name)
         os.makedirs(os.path.dirname(dest), exist_ok=True)
+        page = relativize(page, out_name.count("/"))
         open(dest, "w", encoding="utf-8").write(page)
 
     # 404-Seite aus dem Original
@@ -280,6 +291,7 @@ def main():
 
     for f in ("robots.txt", "llms.txt", "_headers"):
         shutil.copy(os.path.join(ROOT, "static", f), OUT)
+    open(os.path.join(OUT, ".nojekyll"), "w").close()
     print("fertig:", OUT)
 
 
