@@ -227,6 +227,16 @@ def build_body(src, path):
                             'transition-colors hover:border-primary hover:text-primary">WhatsApp</a>', 1)
         body += LIGHTBOX + XENTRA_SCRIPT
 
+    imp = '<a href="/impressum" class="text-secondary/70 transition-colors hover:text-accent">Impressum</a>'
+    imp_active = ('<a class="text-secondary/70 transition-colors hover:text-accent active" href="/impressum" '
+                  'data-status="active" aria-current="page">Impressum</a>')
+    if path == "/datenschutz":
+        body = body.replace(imp_active, imp)
+    elif imp_active in body:
+        imp = imp_active
+    if imp in body:
+        body = body.replace(imp, '<span class="flex gap-6">' + imp + '<a href="/datenschutz" '
+                            'class="text-secondary/70 transition-colors hover:text-accent">Datenschutz</a></span>', 1)
     body = body.replace("Angaben gemäß § 5 TMG", "Angaben gemäß § 5 DDG")  # TMG seit 05/2024 abgelöst
     # Footer-Überschrift mit Suchbegriff ist schon vorhanden; Jahr statisch + per JS aktuell
     body += '<script src="/assets/site.js" defer></script>'
@@ -268,6 +278,18 @@ def main():
         os.makedirs(os.path.dirname(dest), exist_ok=True)
         page = relativize(page, out_name.count("/"))
         open(dest, "w", encoding="utf-8").write(page)
+
+    # Datenschutz-Seite: Impressum-Gerüst (Header/Footer) mit eigenem Inhalt
+    src = open(os.path.join(RAW, "impressum.html"), encoding="utf-8").read()
+    content = open(os.path.join(ROOT, "static", "datenschutz-content.html"), encoding="utf-8").read()
+    a, b = src.index("<section"), src.index("<footer")
+    src = src[:a] + content + src[b:]
+    head = src[:src.find("</head>")]
+    SEO["/datenschutz"] = {"title": "Datenschutzerklärung | Das Bergloft Bernau am Chiemsee",
+                           "description": "Datenschutzerklärung der Ferienwohnung Das Bergloft in Bernau am Chiemsee."}
+    page = ('<!DOCTYPE html>\n<html lang="de">\n<head>\n' + build_head(head, "/datenschutz") +
+            "\n</head>\n<body>" + build_body(src, "/datenschutz") + "\n</body>\n</html>\n")
+    open(os.path.join(OUT, "datenschutz.html"), "w", encoding="utf-8").write(relativize(page, 0))
 
     # 404-Seite aus dem Original
     src = open(os.path.join(RAW, "datenschutz.html"), encoding="utf-8").read()
